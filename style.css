@@ -1,0 +1,243 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Apply dark background and light text globally */
+.stApp {
+    background-color: #0e1117 !important;
+    color: #fafafa !important;
+}
+
+/* Center and set max width for the main content area */
+.main .block-container {
+    background-color: #0e1117 !important;
+    color: #fafafa !important;
+    max-width: 1000px !important; /* Fixed width for content */
+    margin: 0 auto !important; /* Centers the content block */
+}
+
+/* Global font family */
+.main {
+    font-family: 'Inter', sans-serif;
+    padding: 1rem;
+}
+
+/* Dashboard title styling */
+.main-title {
+    font-size: 3rem; /* Larger font size for impact */
+    font-weight: 800; /* Extra bold text */
+    color: #fafafa; /* Fallback text color */
+    text-align: center;
+    margin-bottom: 2rem;
+    /* Gradient text color */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.2; /* Adjust line spacing */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6); /* Subtle text shadow for depth */
+}
+
+/* Styling for main containers like upload, filter, and about sections */
+.upload-container, .filter-container, .about-container {
+    max-width: 600px; /* Limit width of these sections */
+    margin: 2rem auto; /* Center them horizontally with vertical spacing */
+    background: #262730; /* Darker background for sections */
+    border: 1px solid #404040; /* Subtle border */
+    border-radius: 12px; /* Rounded corners */
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Soft shadow */
+}
+
+/* Adjust filter container specific max-width */
+.filter-container {
+    max-width: 500px;
+}
+
+/* Section headers within containers */
+.section-header {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fafafa;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Statistics section styling */
+.stats-section {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #262730;
+    border-radius: 16px;
+    border: 1px solid #404040;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.stats-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #fafafa;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for stats */
+    gap: 2rem;
+    max-width: 600px; /* Limit width of the stat grid */
+    margin: 0 auto;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #667eea; /* Primary accent color for numbers */
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.stat-number.fraud {
+    color: #ef4444; /* Red for fraud numbers */
+}
+
+.stat-number.safe {
+    color: #22c55e; /* Green for legitimate numbers */
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #d1d5db; /* Lighter gray for labels */
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Table header styling */
+.table-header {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #fafafa;
+    margin: 2rem 0 1rem 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* About section specific styling */
+.about-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fafafa;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.about-text {
+    color: #d1d5db; /* Light gray for body text */
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.about-text strong {
+    color: #fafafa; /* White for strong text */
+}
+
+/* Dark theme for Streamlit dataframes */
+.stDataFrame {
+    background-color: #262730 !important;
+}
+
+/* Styling for Streamlit alert boxes */
+.stAlert {
+    max-width: 800px !important;
+    width: fit-content !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Center text inside all alert boxes */
+.stAlert > div > div {
+    text-align: center;
+}
+
+/* Specific styling for each alert type */
+.stInfo {
+    background-color: #0e1117 !important; /* Matches main web background */
+    color: #bfdbfe !important; /* Light blue for info text */
+    border: 1px solid #404040 !important; /* Subtle border */
+}
+
+.stSuccess {
+    background-color: #166534 !important; /* Green for success */
+    color: #bbf7d0 !important;
+}
+
+.stWarning {
+    background-color: #92400e !important; /* Orange for warning */
+    color: #fde68a !important;
+}
+
+.stError {
+    background-color: #991b1b !important; /* Red for error */
+    color: #fecaca !important;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .main {
+        padding: 0.5rem;
+    }
+
+    .main-title {
+        font-size: 1.8rem;
+    }
+
+    .upload-container,
+    .filter-container,
+    .about-container,
+    .stats-section {
+        max-width: 90%;
+        margin: 1rem auto;
+        padding: 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on smaller screens */
+        gap: 1rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+    }
+
+    .upload-container,
+    .filter-container,
+    .stats-section,
+    .about-container {
+        max-width: 95%;
+        margin: 1rem auto;
+    }
+}
