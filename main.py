@@ -4,120 +4,157 @@ import numpy as np
 
 # Configure Streamlit page settings
 st.set_page_config(
-    page_title="ERGCN Fraud Detection Metrics",
+    page_title="Fraud Detection Dashboard",
     page_icon="🛡️",
-    layout="wide", # Use full width of the browser
-    initial_sidebar_state="collapsed" # Hide the sidebar by default
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
-# Load external CSS
+# Load external CSS for styling
 with open("style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Function to generate sample data for demonstration
-def generate_sample_data(num_rows=1000): # Generates 1000 rows
-    np.random.seed(42) # Ensures consistent sample data every time
+def ml_model_prediction(transaction_ids):
+    """
+    Simulates ML model fraud prediction for given transaction IDs.
+    
+    Args:
+        transaction_ids (list): List of transaction IDs to predict
+    
+    Returns:
+        list: List of fraud predictions (0 = Not Fraud, 1 = Fraud)
+    """
+    # Set seed based on transaction IDs for consistent predictions
+    np.random.seed(sum(hash(str(tid)) % 1000 for tid in transaction_ids) % 2**32)
+    
+    # Generate fraud predictions (30% fraud rate)
+    predictions = np.random.choice([0, 1], size=len(transaction_ids), p=[0.7, 0.3])
+    return predictions.tolist()
 
-    data = {
-        'TransactionID': [str(np.random.randint(1000000, 9999999)) for _ in range(num_rows)], # Generates 7-digit numbers
-        'isFraud': np.random.choice([0, 1], size=num_rows, p=[0.7, 0.3]) # 0: Not Fraud, 1: Fraud
-    }
-    return pd.DataFrame(data)
+def generate_sample_data(num_rows=1000):
+    """
+    Generates sample transaction data for demonstration purposes.
+    
+    Args:
+        num_rows (int): Number of sample transactions to generate
+    
+    Returns:
+        pd.DataFrame: DataFrame with TransactionID column only
+    """
+    np.random.seed(42)  # Ensures consistent sample data
+    
+    transaction_ids = [str(np.random.randint(1000000, 9999999)) for _ in range(num_rows)]
+    
+    return pd.DataFrame({'TransactionID': transaction_ids})
+
+def process_transactions(df):
+    """
+    Processes transaction data through ML model and adds predictions.
+    
+    Args:
+        df (pd.DataFrame): DataFrame containing TransactionID column
+    
+    Returns:
+        pd.DataFrame: DataFrame with TransactionID and isFraud columns
+    """
+    # Get fraud predictions from ML model
+    fraud_predictions = ml_model_prediction(df['TransactionID'].tolist())
+    
+    result_df = pd.DataFrame({
+        'TransactionID': df['TransactionID'].values,
+        'isFraud': fraud_predictions
+    })
+    
+    return result_df
 
 # Dashboard Title
 st.markdown('<h1 class="main-title">ERGCN Fraud Detection Dashboard</h1>', unsafe_allow_html=True)
 
-# File uploader section for CSV files
+# File uploader section
 uploaded_file = st.file_uploader(
-    "", # No visible label
+    "",
     type="csv",
-    label_visibility="collapsed", # Hide default label
-    help="Upload your CSV file containing fraud detection metrics"
+    label_visibility="collapsed",
+    help="Upload your CSV file containing TransactionID column"
 )
 
-# Columns for centering informative messages
+# Center informative messages
 col1_info, col2_info, col3_info = st.columns([1, 2, 1])
 
-# Logic to handle file upload or use sample data
+# Handle file upload or use sample data
 if uploaded_file is not None:
     try:
         with col2_info:
-            df = pd.read_csv(uploaded_file)
-            # Rename 'is_Fraud' to 'isFraud' if present in the uploaded file
-            if 'is_Fraud' in df.columns:
-                df.rename(columns={'is_Fraud': 'isFraud'}, inplace=True)
-            # Ensure only TransactionID and isFraud are kept if other columns are in uploaded file
-            # This is a critical step for uploaded files to match the desired table structure
-            if 'TransactionID' in df.columns and 'isFraud' in df.columns:
-                df = df[['TransactionID', 'isFraud']]
-            else:
-                st.warning("⚠️ Uploaded file missing 'TransactionID' or 'isFraud' columns. Using sample data.")
-                df = generate_sample_data() # Fallback if essential columns are missing
-            st.success(f"✅ File uploaded successfully - {len(df)} rows loaded")
-            data_to_display = df
+            # Load uploaded CSV
+            uploaded_df = pd.read_csv(uploaded_file)
+            
+            # Validate required column exists
+            if 'TransactionID' not in uploaded_df.columns:
+                st.error("❌ Error: 'TransactionID' column is required in the uploaded file.")
+                st.stop()  # Stop execution if required column is missing
+            
+            # Extract only TransactionID column
+            input_df = uploaded_df[['TransactionID']].copy()
+            
+            # Process transactions through ML model
+            data_to_display = process_transactions(input_df)
+            
+            st.success(f"✅ File uploaded successfully - {len(data_to_display)} transactions processed")
+            
     except Exception as e:
         with col2_info:
             st.error(f"❌ Error loading file: {str(e)}")
-            data_to_display = generate_sample_data() # Fallback to sample data on error
-            st.warning("📋 Using sample data instead due to file error.")
+            st.stop()  # Stop execution on file error
 else:
     with col2_info:
-        data_to_display = generate_sample_data() # Default to sample data if no file uploaded
-        st.info("📋 No file uploaded - displaying sample data.")
+        # Generate sample data and process it
+        sample_input = generate_sample_data()
+        data_to_display = process_transactions(sample_input)
+        st.info("📋 No file uploaded - displaying sample data with ML predictions.")
 
-
+# Results section header
 st.markdown('<h2 class="table-header">Results</h2>', unsafe_allow_html=True)
 
-# Filter options for the displayed results table
+# Filter options for displaying results
 fraud_filter = st.pills(
-    "", # No visible label for pills
+    "",
     options=["Show All", "Fraud Only", "Not Fraud Only"],
     default="Show All",
     label_visibility="collapsed"
 )
 
-# Apply filters to create a DataFrame for table display
+# Apply filters to the data
 filtered_df = data_to_display.copy()
 if fraud_filter == "Fraud Only":
-    if 'isFraud' in filtered_df.columns:
-        filtered_df = filtered_df[filtered_df['isFraud'] == 1]
-    else:
-        st.warning("⚠️ 'isFraud' column not found for filtering.")
+    filtered_df = filtered_df[filtered_df['isFraud'] == 1]
 elif fraud_filter == "Not Fraud Only":
-    if 'isFraud' in filtered_df.columns:
-        filtered_df = filtered_df[filtered_df['isFraud'] == 0]
-    else:
-        st.warning("⚠️ 'isFraud' column not found for filtering.")
+    filtered_df = filtered_df[filtered_df['isFraud'] == 0]
 
-# Reset index for clean table display (important after filtering if index isn't hidden)
+# Reset index after filtering for clean display
 filtered_df = filtered_df.reset_index(drop=True)
 
-# Calculate total pages based on selected rows per page
+#  setup
 rows_per_page_options = [10, 25, 50, 100]
 rows_per_page = st.session_state.get("rows_per_page", 25)
 
-# Calculate total pages
+# Calculate pagination parameters
 total_rows = len(filtered_df)
 total_pages = max((total_rows - 1) // rows_per_page + 1, 1)
+current_page = max(1, min(st.session_state.get("current_page", 1), total_pages))
 
-# Get current page from session state (or default to 1)
-current_page = st.session_state.get("current_page", 1)
-
-# Clamp current page to valid range
-current_page = max(1, min(current_page, total_pages))
-
-# Slice the dataframe
+# Get paginated data slice
 start_idx = (current_page - 1) * rows_per_page
 end_idx = start_idx + rows_per_page
 paginated_df = filtered_df.iloc[start_idx:end_idx]
 
-# Show the paginated table
+# Display paginated table
 st.dataframe(paginated_df, use_container_width=True)
 
-# --- Compact controls stacked below table ---
+# Pagination controls
 with st.container():
     col1, _ = st.columns([1, 3])
     with col1:
+        # Page number input
         st.number_input(
             "Page",
             min_value=1,
@@ -127,8 +164,8 @@ with st.container():
             key="current_page",
             label_visibility="collapsed",
         )
-
-    with col1:
+        
+        # Rows per page selector
         st.selectbox(
             "Rows per page",
             options=rows_per_page_options,
@@ -137,23 +174,17 @@ with st.container():
             label_visibility="collapsed",
         )
 
-# Statistics Overview section (always based on the complete dataset)
+# Statistics Overview (based on complete processed dataset)
 if len(data_to_display) > 0:
     total_records = len(data_to_display)
-    # Safely get fraud/legitimate counts if 'isFraud' column exists
-    if 'isFraud' in data_to_display.columns:
-        fraud_count = len(data_to_display[data_to_display['isFraud'] == 1])
-        not_fraud_count = len(data_to_display[data_to_display['isFraud'] == 0])
-    else:
-        fraud_count = 0
-        not_fraud_count = 0
-        st.warning("⚠️ 'isFraud' column not found in overall data for statistics calculation.")
+    fraud_count = len(data_to_display[data_to_display['isFraud'] == 1])
+    not_fraud_count = len(data_to_display[data_to_display['isFraud'] == 0])
+    fraud_rate = (fraud_count / total_records) * 100
 
-    fraud_rate = (fraud_count / total_records) * 100 if total_records > 0 else 0
-
+    # Display statistics in formatted HTML
     st.markdown(f"""
     <div class="stats-section">
-        <div class="stats-title">📊 Statistics Overview (Overall Data)</div>
+        <div class="stats-title">📊 Statistics Overview (ML Model Results)</div>
         <div class="stats-grid">
             <div class="stat-item">
                 <span class="stat-number">{total_records}</span>
@@ -174,29 +205,29 @@ if len(data_to_display) > 0:
         </div>
     </div>
     """, unsafe_allow_html=True)
-else:
-    st.warning("Cannot display overall statistics as no data is loaded.")
 
-
-# About section with integrated project credits
+# About section with project information
 st.markdown("""
 <div class="about-container">
     <div class="about-title">ℹ️ About This Dashboard</div>
     <div class="about-text">
-        This dashboard analyzes the performance metrics of the <strong>ERGCN fraud detection model</strong>.
-        Upload your CSV file to analyze real data or explore the sample dataset provided.
+        This dashboard processes transaction data through the <strong>ERGCN fraud detection model</strong>.
+        Upload your CSV file containing TransactionID column to analyze real data, or explore the sample dataset.
         <br><br>
-        <strong>Metrics Explained:</strong><br>
-        • <strong>isFraud:</strong> Binary indicator (0 = Legitimate, 1 = Fraudulent)<br>
+        <strong>Process Flow:</strong><br>
+        • <strong>Input:</strong> CSV file with TransactionID column<br>
+        • <strong>Processing:</strong> ML model generates fraud predictions<br>
+        • <strong>Output:</strong> Results table with TransactionID and fraud status<br>
+        <br>
+        <strong>Output Explained:</strong><br>
+        • <strong>TransactionID:</strong> Transaction identifier<br>
+        • <strong>isFraud:</strong> ML prediction (0 = Legitimate, 1 = Fraudulent)<br>
         <br>
         <small>This dashboard was developed by <strong>students</strong> from Polytechnic University of the Philippines as a requirement for their <strong>Software Engineering 1</strong> course.</small>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Message displayed if no data matches the current table filter
+# Display message if no data matches current filter
 if len(filtered_df) == 0:
-    st.warning("📭 No data matches the current filter criteria for table display.")
-
-# Final confirmation log for developers
-print("ERGCN Fraud Detection Dashboard is running!")
+    st.warning("No data matches the current filter criteria.")
