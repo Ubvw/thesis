@@ -22,7 +22,7 @@
 
 /* Dashboard title styling */
 .main-title {
-    font-size: 3.2rem;
+    font-size: 4rem !important;
     font-weight: 900;
     color: #ffffff !important;
     text-align: center;

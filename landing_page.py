@@ -424,19 +424,12 @@ with st.container():
                     <p class="hero-subtitle">
                         Powered by ERGCN machine learning model to analyze transaction data and detect fraudulent activities
                     </p>
-                    <div class="cta-section">
-                        <p class="cta-text">Ready to analyze your transaction data?</p>
-                    </div>
                 </div>
             </div>
         </section>
         """,
         unsafe_allow_html=True
     )
-    
-    # Enhanced centered button
-    if st.button("🚀 Go to Dashboard"):
-        st.switch_page("dashboard.py")
 
     # Render the rest of the enhanced HTML
     st.markdown(
@@ -481,6 +474,53 @@ with st.container():
                 </div>
             </div>
         </section>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # --- CTA and Go to Dashboard Button (centered, prominent) ---
+    cta_col = st.columns([1,2,1])[1]
+    with cta_col:
+        st.markdown('<p class="cta-text" style="margin-top: 0.5rem; margin-bottom: 0.5rem; font-size:1.4rem; font-weight:700; text-align:center;">Ready to analyze your transaction data?</p>', unsafe_allow_html=True)
+        go_dashboard = st.button("Go to Dashboard", key="hero_dashboard_btn")
+        st.markdown("<div style='height:2.5rem;'></div>", unsafe_allow_html=True)
+    if go_dashboard:
+        st.switch_page("dashboard.py")
+
+    # Enhanced button styling (make it more prominent)
+    st.markdown(
+        """
+        <style>
+        .stButton > button#hero_dashboard_btn {
+            display: block;
+            margin: 0 auto 0 auto;
+            font-size: 1.6rem !important;
+            padding: 1.2rem 3.5rem !important;
+            border-radius: 16px !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: #fff !important;
+            border: none !important;
+            font-weight: 800 !important;
+            box-shadow: 0 6px 28px rgba(102,126,234,0.35) !important;
+            transition: all 0.3s ease !important;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            min-width: 320px;
+        }
+        .stButton > button#hero_dashboard_btn:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+            color: #fff !important;
+            transform: translateY(-3px) scale(1.04) !important;
+            box-shadow: 0 10px 36px rgba(102,126,234,0.45) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Render the rest of the enhanced HTML
+    st.markdown(
+        """
         <section class="how-it-works">
             <div class="container">
                 <div class="section-header">
@@ -565,18 +605,14 @@ with st.container():
                         application of machine learning in financial technology, combining advanced algorithms with user-friendly 
                         interface design.
                     </p>
-                    <p class="about-text">
-                        The system showcases modern software engineering practices, including data processing, machine learning 
-                        integration, and responsive web design, providing a comprehensive solution for fraud detection in 
-                        financial transactions.
-                    </p>
-                    <div class="university-badge">
-                        🎓 Polytechnic University of the Philippines<br>
-                        Software Engineering 1 Project
-                    </div>
                 </div>
             </div>
         </section>
         """,
         unsafe_allow_html=True
     )
+
+# <div class="university-badge">
+#     🎓 Polytechnic University of the Philippines<br>
+#     Software Engineering 1 Project
+# </div>

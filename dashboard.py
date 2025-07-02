@@ -2,8 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-if st.button("Back to Landing Page"):
-    st.switch_page("landing_page.py")
+st.set_page_config(layout="wide")
 
 # Load external CSS for styling
 with open("style.css") as f:
@@ -27,8 +26,15 @@ def process_transactions(df):
     })
     return result_df
 
-# Dashboard Title
-st.markdown('<h1 class="main-title">Fraud Detection Dashboard</h1>', unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1, 6, 1])
+with col1:
+    if st.button("\u2190 Back to Landing Page"):  # Unicode left arrow for clarity
+        st.switch_page("landing_page.py")
+with col2:
+    st.markdown('<h1 class="main-title" style="text-align:center;">CredSight: Fraud Detection System</h1>', unsafe_allow_html=True)
+# col3 left empty for spacing
+
+st.markdown("<div style='margin-bottom: 1.5rem;'></div>", unsafe_allow_html=True)
 
 # File uploader section
 uploaded_file = st.file_uploader(
@@ -59,7 +65,7 @@ else:
     with col2_info:
         sample_input = generate_sample_data()
         data_to_display = process_transactions(sample_input)
-        st.info("📋 No file uploaded - displaying sample data with ML predictions.")
+        st.info("🛈 No file uploaded - displaying sample data with ML predictions.")
 
 # Results section header
 st.markdown('<h2 class="table-header">Results</h2>', unsafe_allow_html=True)
@@ -73,9 +79,9 @@ fraud_filter = st.pills(
 )
 
 filtered_df = data_to_display.copy()
-if fraud_filter == "Fraud Only":
+if fraud_filter == "Fraud":
     filtered_df = filtered_df[filtered_df['isFraud'] == 1]
-elif fraud_filter == "Not Fraud Only":
+elif fraud_filter == "Not Fraud":
     filtered_df = filtered_df[filtered_df['isFraud'] == 0]
 
 filtered_df = filtered_df.reset_index(drop=True)
@@ -92,7 +98,7 @@ if len(data_to_display) > 0:
 
     st.markdown(f"""
     <div class="stats-section">
-        <div class="stats-title">📊 Statistics Overview (ML Model Results)</div>
+        <div class="stats-title">Statistics Overview</div>
         <div class="stats-grid">
             <div class="stat-item">
                 <span class="stat-number">{total_records}</span>
@@ -117,7 +123,7 @@ if len(data_to_display) > 0:
 # About section
 st.markdown("""
 <div class="about-container">
-    <div class="about-title">ℹ️ About This Dashboard</div>
+    <div class="about-title">🛈 About This Dashboard</div>
     <div class="about-text">
         This dashboard processes transaction data through the <strong>ERGCN fraud detection model</strong>.
         Upload your CSV file containing TransactionID column to analyze real data, or explore the sample dataset.
