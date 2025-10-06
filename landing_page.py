@@ -487,13 +487,14 @@ with st.container():
     if go_dashboard:
         st.switch_page("dashboard.py")
 
-    # Enhanced button styling (make it more prominent)
+    # Enhanced button styling (make it more prominent and properly centered)
     st.markdown(
         """
         <style>
+        div[data-testid="column"] .stButton > button#hero_dashboard_btn,
         .stButton > button#hero_dashboard_btn {
-            display: block;
-            margin: 0 auto 0 auto;
+            display: block !important;
+            margin: 0 auto !important;
             font-size: 1.6rem !important;
             padding: 1.2rem 3.5rem !important;
             border-radius: 16px !important;
@@ -503,15 +504,24 @@ with st.container():
             font-weight: 800 !important;
             box-shadow: 0 6px 28px rgba(102,126,234,0.35) !important;
             transition: all 0.3s ease !important;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            min-width: 320px;
+            text-transform: uppercase !important;
+            letter-spacing: 1.5px !important;
+            min-width: 320px !important;
+            width: auto !important;
+            text-align: center !important;
         }
+        div[data-testid="column"] .stButton > button#hero_dashboard_btn:hover,
         .stButton > button#hero_dashboard_btn:hover {
             background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
             color: #fff !important;
             transform: translateY(-3px) scale(1.04) !important;
             box-shadow: 0 10px 36px rgba(102,126,234,0.45) !important;
+        }
+        div[data-testid="column"] .stButton,
+        .stButton {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
         }
         </style>
         """,
